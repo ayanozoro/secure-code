@@ -7,7 +7,7 @@
   "scripts": {
     "build": "npm run build -w @securecode/core && npm run build -w @securecode/cli",
     "check": "npm run check -w @securecode/core && npm run check -w @securecode/cli",
-    "test": "vitest --passWithNoTests"
+    "test": "vitest run --passWithNoTests"
   },
   "devDependencies": {
     "vitest": "^2.1.8"
