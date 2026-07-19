@@ -18,9 +18,12 @@ program
   .option('-o, --output <path>', 'write results to file')
   .action(async (path: string, options: { format: 'terminal' | 'sarif'; output?: string }) => {
     const result = await scan({ targetPath: path, format: options.format });
+    for (const warning of result.warnings) {
+      process.stderr.write(`warning: ${warning}\n`);
+    }
 
     if (options.format === 'sarif') {
-      const sarif = JSON.stringify(findingsToSarif(result.findings), null, 2);
+      const sarif = JSON.stringify(findingsToSarif(result.sarifFindings), null, 2);
       if (options.output) {
         await writeFile(resolve(options.output), sarif, 'utf8');
       } else {

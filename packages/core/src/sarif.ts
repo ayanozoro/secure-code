@@ -18,6 +18,14 @@ export function findingsToSarif(findings: Finding[]): unknown {
           message: {
             text: finding.message
           },
+          suppressions: finding.suppressed
+            ? [
+                {
+                  kind: 'inSource',
+                  justification: finding.suppressionReason ?? 'Suppressed via scanner-ignore comment.'
+                }
+              ]
+            : undefined,
           locations: [
             {
               physicalLocation: {

@@ -1,0 +1,53 @@
+rules:
+  - id: guardrail.injection.sql-template-literal
+    message: Potential SQL injection via template literal interpolation in db.query().
+    severity: ERROR
+    languages: [javascript, typescript]
+    patterns:
+      - pattern: $DB.query(`...${$USER_INPUT}...`)
+      - pattern-inside: |
+          function $FUNC(...){
+            ...
+          }
+
+  - id: guardrail.injection.command-exec-user-input
+    message: Potential command injection by passing user-controlled input to exec().
+    severity: ERROR
+    languages: [javascript, typescript]
+    patterns:
+      - pattern: exec($CMD)
+      - pattern-either:
+          - pattern-inside: |
+              $X = req.body.$FIELD
+              ...
+          - pattern-inside: |
+              $X = req.query.$FIELD
+              ...
+
+  - id: guardrail.access-control.missing-auth-middleware
+    message: Route handler may be missing auth middleware.
+    severity: WARNING
+    languages: [javascript, typescript]
+    patterns:
+      - pattern-either:
+          - pattern: app.get($ROUTE, ($REQ, $RES) => $BODY)
+          - pattern: app.post($ROUTE, ($REQ, $RES) => $BODY)
+          - pattern: router.get($ROUTE, ($REQ, $RES) => $BODY)
+          - pattern: router.post($ROUTE, ($REQ, $RES) => $BODY)
+      - pattern-not: app.get($ROUTE, $AUTH, ($REQ, $RES) => $BODY)
+      - pattern-not: app.post($ROUTE, $AUTH, ($REQ, $RES) => $BODY)
+      - pattern-not: router.get($ROUTE, $AUTH, ($REQ, $RES) => $BODY)
+      - pattern-not: router.post($ROUTE, $AUTH, ($REQ, $RES) => $BODY)
+
+  - id: guardrail.validation.req-input-without-schema
+    message: Request input is used without nearby explicit validation.
+    severity: WARNING
+    languages: [javascript, typescript]
+    patterns:
+      - pattern-either:
+          - pattern: req.body.$FIELD
+          - pattern: req.query.$FIELD
+      - pattern-not-inside: |
+          $SCHEMA.parse(...)
+      - pattern-not-inside: |
+          validate(...)
