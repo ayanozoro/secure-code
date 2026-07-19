@@ -1,6 +1,41 @@
+# Dependencies
 node_modules
+
+# Build output
 dist
-.turbo
-.DS_Store
 *.tsbuildinfo
+
+# OS / Editor
+.DS_Store
+Thumbs.db
 *.log
+
+# Benchmark target repos (cloned locally, not committed)
+benchmarks/juice-shop
+benchmarks/nodegoat
+
+# Guardrail local AI config (contains API keys)
+.guardrail/config.json
+
+# AI validation cache
+.guardrail/cache/
+
+# Test / coverage output
+coverage
+.nyc_output
+
+# Turbo cache
+.turbo
+
+# Environment files with secrets
+.env
+.env.local
+.env.*.local
+
+# Test files — excluded from git so the pre-commit scanner does not
+# flag intentional vulnerable fixtures used in unit tests
+*.test.ts
+*.test.js
+*.spec.ts
+*.spec.js
+packages/core/fixtures/

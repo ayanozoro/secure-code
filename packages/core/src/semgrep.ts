@@ -29,7 +29,8 @@ export interface SemgrepRunResult {
 
 export async function runSemgrep(targetPath: string): Promise<SemgrepRunResult> {
   const currentDir = resolve(fileURLToPath(new URL('.', import.meta.url)));
-  const rulesPath = resolve(currentDir, '../rules/semgrep/owasp-phase1.yml');
+  // Point at the whole rules/semgrep directory — any .yml file inside is loaded automatically
+  const rulesPath = resolve(currentDir, '../rules/semgrep');
   const semgrepArgs = ['--config', rulesPath, '--json', '--quiet', targetPath];
   const execution = await runSemgrepWithFallbacks(semgrepArgs);
 

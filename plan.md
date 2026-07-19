@@ -46,15 +46,18 @@ Create a TypeScript CLI (`guardrail`) that performs a **hybrid static + AI secur
 
 | Step | Detail |
 |------|--------|
-| **AI Gating** | Only query Claude for findings flagged by static engine **or** for files containing `auth`, `payment`, `upload`, `db`. |
+| **Multi-Provider AI** | Support Anthropic and OpenAI-compatible APIs (Ollama, LM Studio, OpenAI, Gemini) configured via `GUARDRAIL_AI_PROVIDER`, `GUARDRAIL_AI_MODEL`, `OPENAI_API_BASE`, etc. |
+| **CLI Gating Flags** | Add `--ai`/`--no-ai` to toggle validation, and `--ai-gating <mode>` (`selective`, `high-only`, `all`) to control AI validation scope. |
 | **Prompt Template** | Context snippet → JSON request for `{confirmed, severity, explanation, suggested_fix_diff, false_positive}`. |
-| **Cache** | SHA-256 keyed cache (`.guardrail/cache/`) to avoid re-calling Claude on unchanged code. |
+| **Cache** | SHA-256 keyed cache (`.guardrail/cache/`) to avoid re-calling the AI engine on unchanged code. |
 | **Merge** | Enrich `Finding` with `explanation`, `aiConfirmed`, etc.; drop `false_positive` findings from output. |
-| **Graceful Degradation** | If `ANTHROPIC_API_KEY` missing, log warning and run static-only mode. |
+| **Graceful Degradation** | If no API keys (`ANTHROPIC_API_KEY` or `OPENAI_API_KEY`) are present, print a helpful info message and run static-only mode. |
 
 **Exit Criteria**
 - Injection finding gets `aiConfirmed: true`, `explanation`, and `suggested_fix_diff`.
 - Re-scan of unchanged code hits cache → no API call.
+- Local/OpenAI-compatible models or Anthropic models can be dynamically configured.
+
 
 ---
 

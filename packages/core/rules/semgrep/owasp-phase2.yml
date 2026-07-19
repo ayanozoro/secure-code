@@ -1,0 +1,123 @@
+rules:
+  - id: guardrail.injection.eval-user-input
+    message: >
+      Potential code injection: eval() called with a variable that may be
+      user-controlled. This allows arbitrary code execution.
+    severity: ERROR
+    languages: [javascript, typescript]
+    patterns:
+      - pattern: eval($X)
+      - pattern-either:
+          - pattern-inside: |
+              $X = req.body.$FIELD
+              ...
+          - pattern-inside: |
+              $X = req.query.$FIELD
+              ...
+          - pattern-inside: |
+              const $X = req.body.$FIELD
+              ...
+          - pattern-inside: |
+              const $X = req.query.$FIELD
+              ...
+    metadata:
+      owasp: A03
+      cwe: CWE-94
+      severity: critical
+
+  - id: guardrail.injection.new-function-user-input
+    message: >
+      new Function() called with user-controlled input allows arbitrary
+      code execution (CWE-94). Avoid dynamic code generation.
+    severity: ERROR
+    languages: [javascript, typescript]
+    patterns:
+      - pattern: new Function($...ARGS, $X)
+      - pattern-either:
+          - pattern-inside: |
+              $X = req.body.$FIELD
+              ...
+          - pattern-inside: |
+              $X = req.query.$FIELD
+              ...
+    metadata:
+      owasp: A03
+      cwe: CWE-94
+      severity: critical
+
+  - id: guardrail.access-control.open-redirect
+    message: >
+      Open redirect: res.redirect() called with a user-controlled URL.
+      Attackers can redirect victims to malicious sites.
+    severity: ERROR
+    languages: [javascript, typescript]
+    patterns:
+      - pattern: res.redirect($URL)
+      - pattern-either:
+          - pattern-inside: |
+              $URL = req.query.$FIELD
+              ...
+          - pattern-inside: |
+              $URL = req.body.$FIELD
+              ...
+          - pattern-inside: |
+              const $URL = req.query.$FIELD
+              ...
+    metadata:
+      owasp: A01
+      cwe: CWE-601
+      severity: high
+
+  - id: guardrail.crypto.hardcoded-jwt-secret
+    message: >
+      JWT signed with a hardcoded string literal secret. A guessable or
+      leaked secret allows token forgery. Use a strong random value from
+      an environment variable.
+    severity: ERROR
+    languages: [javascript, typescript]
+    pattern-either:
+      - pattern: jwt.sign($PAYLOAD, "...")
+      - pattern: jwt.sign($PAYLOAD, '...')
+      - pattern: jsonwebtoken.sign($PAYLOAD, "...")
+      - pattern: jsonwebtoken.sign($PAYLOAD, '...')
+      - pattern: jwt.sign($PAYLOAD, "...", $OPTS)
+      - pattern: jwt.sign($PAYLOAD, '...', $OPTS)
+    metadata:
+      owasp: A02
+      cwe: CWE-321
+      severity: high
+
+  - id: guardrail.misconfiguration.permissive-cors
+    message: >
+      CORS configured with no origin restrictions (cors() with no options).
+      This allows any external domain to make credentialed requests.
+    severity: WARNING
+    languages: [javascript, typescript]
+    pattern-either:
+      - pattern: app.use(cors())
+      - pattern: $APP.use(cors())
+      - pattern: router.use(cors())
+    metadata:
+      owasp: A05
+      cwe: CWE-942
+      severity: medium
+
+  - id: guardrail.injection.template-literal-html
+    message: >
+      User input interpolated directly into an HTML template string and
+      sent to the client — potential XSS (A03/A07).
+    severity: ERROR
+    languages: [javascript, typescript]
+    patterns:
+      - pattern: res.send(`...${ $INPUT }...`)
+      - pattern-either:
+          - pattern-inside: |
+              $INPUT = req.body.$FIELD
+              ...
+          - pattern-inside: |
+              $INPUT = req.query.$FIELD
+              ...
+    metadata:
+      owasp: A03
+      cwe: CWE-79
+      severity: high

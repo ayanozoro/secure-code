@@ -9,6 +9,8 @@
     "dist"
   ],
   "dependencies": {
+    "@anthropic-ai/sdk": "^0.112.3",
+    "openai": "^6.48.0",
     "web-tree-sitter": "^0.25.10"
   },
   "devDependencies": {

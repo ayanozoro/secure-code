@@ -8,12 +8,22 @@
     "build": "npm run build -w @securecode/core && npm run build -w @securecode/cli",
     "check": "npm run check -w @securecode/core && npm run check -w @securecode/cli",
     "test": "vitest run --passWithNoTests",
-    "scan": "node packages/cli/dist/index.js scan"
+    "scan": "node packages/cli/dist/index.js scan",
+    "prepare": "husky",
+    "verify": "node scripts/verify.js"
   },
   "devDependencies": {
+    "husky": "^9.1.7",
+    "lint-staged": "^17.1.0",
     "vitest": "^2.1.8"
   },
   "dependencies": {
     "semgrep": "^0.0.1"
+  },
+  "lint-staged": {
+    "*.{js,ts,jsx,tsx}": [
+      "node packages/cli/dist/index.js scan --no-ai"
+    ]
   }
 }
+

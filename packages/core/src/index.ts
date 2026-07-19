@@ -4,3 +4,7 @@ export * from './semgrep.js';
 export * from './suppression.js';
 export * from './tree-sitter.js';
 export * from './types.js';
+export * from './ai.js';
+export * from './cache.js';
+export * from './secret-scanner.js';
+export * from './sca-scanner.js';
